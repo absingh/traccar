@@ -60,28 +60,34 @@ public abstract class JsonGeocoder implements Geocoder {
 
         Context.getAsyncHttpClient().prepareGet(String.format(url, latitude, longitude))
                 .execute(new AsyncCompletionHandler() {
-            @Override
-            public Object onCompleted(Response response) throws Exception {
-                try (JsonReader reader = Json.createReader(response.getResponseBodyAsStream())) {
-                    Address address = parseAddress(reader.readObject());
-                    if (address != null) {
-                        String formattedAddress = format.format(address);
-                        if (cache != null) {
-                            cache.put(new AbstractMap.SimpleImmutableEntry<>(latitude, longitude), formattedAddress);
+                    @Override
+                    public Object onCompleted(Response response) throws Exception {
+                        try (JsonReader reader = Json.createReader(response.getResponseBodyAsStream())) {
+                            Address address = parseAddress(reader.readObject());
+                            if (address != null) {
+                                String formattedAddress = "";
+                                if (address.getFormattedAddress() == null) {
+                                    formattedAddress = format.format(address);
+                                } else {
+                                    formattedAddress = address.getFormattedAddress();
+                                }
+                                if (cache != null) {
+                                    cache.put(new AbstractMap.SimpleImmutableEntry<>(latitude, longitude),
+                                            formattedAddress);
+                                }
+                                callback.onSuccess(formattedAddress);
+                            } else {
+                                callback.onFailure(new GeocoderException("Empty address"));
+                            }
                         }
-                        callback.onSuccess(formattedAddress);
-                    } else {
-                        callback.onFailure(new GeocoderException("Empty address"));
+                        return null;
                     }
-                }
-                return null;
-            }
 
-            @Override
-            public void onThrowable(Throwable t) {
-                callback.onFailure(t);
-            }
-        });
+                    @Override
+                    public void onThrowable(Throwable t) {
+                        callback.onFailure(t);
+                    }
+                });
     }
 
     public abstract Address parseAddress(JsonObject json);

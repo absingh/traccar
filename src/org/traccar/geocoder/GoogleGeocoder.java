@@ -15,6 +15,8 @@
  */
 package org.traccar.geocoder;
 
+import org.traccar.helper.Log;
+
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
@@ -79,7 +81,9 @@ public class GoogleGeocoder extends JsonGeocoder {
                     }
                 }
             }
-
+            String formattedAddress = ((JsonObject) results.get(0)).getString("formatted_address");
+            address.setFormattedAddress(formattedAddress);
+            Log.error("Address is " + formattedAddress);
             return address;
         }
 
