@@ -61,6 +61,12 @@ public class PositionResource extends BaseResource {
             return positions;
         } else if (deviceId == 0) {
             return Context.getDeviceManager().getInitialState(getUserId());
+        } else if (deviceId != 0) {
+            ArrayList<Position> positions = new ArrayList<>();
+            Position position = Context.getDataManager().getDevicePosition(deviceId);
+            Context.getPermissionsManager().checkDevice(getUserId(), position.getDeviceId());
+            positions.add(position);
+            return positions;
         } else {
             Context.getPermissionsManager().checkDevice(getUserId(), deviceId);
             return Context.getDataManager().getPositions(

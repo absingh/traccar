@@ -38,6 +38,10 @@
         WHERE email = :email
     </entry>
 
+    <entry key='database.selectDevicePosition'>
+        SELECT * FROM positions WHERE deviceId = :deviceId ORDER BY id DESC IMIT 1
+    </entry>
+
     <entry key='database.selectPositions'>
         SELECT * FROM positions WHERE deviceId = :deviceId AND fixTime BETWEEN :from AND :to ORDER BY fixTime
     </entry>

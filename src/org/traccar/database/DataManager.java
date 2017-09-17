@@ -320,6 +320,12 @@ public class DataManager {
                 .executeQuery(Position.class);
     }
 
+    public Position getDevicePosition(long deviceId) throws SQLException {
+        return QueryBuilder.create(dataSource, getQuery("database.selectDevicePosition"))
+                .setLong("deviceId", deviceId)
+                .executeQuerySingle(Position.class);
+    }
+
     public void addPosition(Position position) throws SQLException {
         position.setId(QueryBuilder.create(dataSource, getQuery(ACTION_INSERT, Position.class), true)
                 .setObject(position)
